@@ -190,10 +190,11 @@ def infer(images_path, model, postprocessors, device, output_path):
         if len(bboxes_scaled) == 0:
             continue
 
+        C = ['N/A', 'crop', 'weed']
         img = np.array(orig_image)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        for idx, box in enumerate(bboxes_scaled):
-            bbox = box.cpu().data.numpy()
+        for idx, box in enumerate(zip(bboxes_scaled, probas)):
+            bbox = box[0].cpu().data.numpy()
             bbox = bbox.astype(np.int32)
             bbox = np.array([
                 [bbox[0], bbox[1]],
@@ -203,11 +204,16 @@ def infer(images_path, model, postprocessors, device, output_path):
                 ])
             bbox = bbox.reshape((4, 2))
             cv2.polylines(img, [bbox], True, (0, 255, 0), 2)
+            p = box[1]
+            clazz = p.argmax().astype(np.int32)
+            preds = np.array(C)[clazz.astype(int)]
+            text = f'{preds}: {p[clazz]:0.2f}'
+            cv2.putText(img, text, (bbox[0][0], bbox[0][1]), cv2.FONT_HERSHEY_SIMPLEX, 1, 255)
 
-        # img_save_path = os.path.join(output_path, filename)
-        # cv2.imwrite(img_save_path, img)
-        cv2.imshow("img", img)
-        cv2.waitKey()
+        img_save_path = os.path.join(output_path, filename)
+        cv2.imwrite(img_save_path, img)
+        # cv2.imshow("img", img)
+        # cv2.waitKey()
         infer_time = end_t - start_t
         duration += infer_time
         print("Processing...{} ({:.3f}s)".format(filename, infer_time))
