@@ -84,7 +84,7 @@ def get_args_parser():
                         help="Dropout applied in the transformer")
     parser.add_argument('--nheads', default=8, type=int,
                         help="Number of attention heads inside the transformer's attentions")
-    parser.add_argument('--num_queries', default=10, type=int,
+    parser.add_argument('--num_queries', default=100, type=int,
                         help="Number of query slots")
     parser.add_argument('--pre_norm', action='store_true')
 
@@ -208,7 +208,7 @@ def infer(images_path, model, postprocessors, device, output_path):
             clazz = p.argmax().astype(np.int32)
             preds = np.array(C)[clazz.astype(int)]
             text = f'{preds}: {p[clazz]:0.2f}'
-            cv2.putText(img, text, (bbox[0][0], bbox[0][1]), cv2.FONT_HERSHEY_SIMPLEX, 1, 255)
+            cv2.putText(img, text, (bbox[0][0], bbox[0][1]), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0))
 
         img_save_path = os.path.join(output_path, filename)
         cv2.imwrite(img_save_path, img)
