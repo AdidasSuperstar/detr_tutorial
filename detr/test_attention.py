@@ -228,11 +228,12 @@ def infer(images_path, model, postprocessors, device, output_path):
             ax.axis('off')
             # ax.set_title(CLASSES[probas[idx].argmax()])
         fig.tight_layout()
-        plt.show()
+        #plt.show()
 
 
 
-        # img_save_path = os.path.join(output_path, filename)
+        img_save_path = os.path.join(output_path, filename)
+        plt.savefig(img_save_path)
         # cv2.imwrite(img_save_path, img)
         # cv2.imshow("img", img)
         cv2.waitKey()
